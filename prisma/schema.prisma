@@ -1,0 +1,113 @@
+// ==========================================================================
+// REELZAK — Prisma Schema
+// ==========================================================================
+// Models:
+//   User    — clients + admins (role-based)
+//   Order   — reel orders (brief -> delivery)
+//   OrderStatusUpdate — audit trail of status changes
+//   Package — pricing tiers (1 / 4 / 10 reels per month)
+// --------------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // LOCAL DEV: SQLite (works out of the box in this sandbox)
+  // PRODUCTION: change to "postgresql" and point DATABASE_URL to Neon
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// USER
+// ---------------------------------------------------------------------------
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String? // null if using OAuth (future-proof)
+  role      Role     @default(CLIENT)
+  brandName String? // convenience cache of the latest brand name used in briefs
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  statusUpdates OrderStatusUpdate[]
+
+  @@index([email])
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+// ---------------------------------------------------------------------------
+// ORDER
+// ---------------------------------------------------------------------------
+model Order {
+  id              String         @id @default(cuid())
+  orderNumber     String         @unique // human-friendly: RZK-2026-0001
+  clientId        String
+  client          User           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  brandName       String
+  industry        String?
+  briefDetails    String         // JSON-encoded brief (objective, style, audience, message, refs, etc.)
+  status          OrderStatus    @default(PENDING)
+  deadline        DateTime?
+  deliveryFileUrl String?        // populated by admin when status -> DELIVERED
+  deliveryFileName String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  statusUpdates   OrderStatusUpdate[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([deadline])
+}
+
+enum OrderStatus {
+  PENDING          // brief submitted, awaiting team pickup
+  IDEATION         // team is researching/ideating concepts
+  AI_GENERATION    // generating assets with AI
+  EDITING          // assembling the final reel
+  READY_FOR_REVIEW // first cut sent to client for review
+  DELIVERED        // final file attached, order closed
+}
+
+// ---------------------------------------------------------------------------
+// ORDER STATUS UPDATE — audit trail
+// ---------------------------------------------------------------------------
+model OrderStatusUpdate {
+  id         String       @id @default(cuid())
+  orderId    String
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus
+  toStatus   OrderStatus
+  changedById String?
+  changedBy  User?        @relation(fields: [changedById], references: [id])
+  note       String?
+  createdAt  DateTime     @default(now())
+
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// PACKAGE — pricing tiers (single source of truth for the pricing section)
+// ---------------------------------------------------------------------------
+model Package {
+  id        String   @id @default(cuid())
+  slug      String   @unique // "single" | "monthly-4" | "monthly-10"
+  name      String
+  tagline   String?
+  priceUsd  Int      // in whole dollars; display as $price/mo
+  reelCount Int      // number of reels included
+  cadence   String   @default("one-time") // "one-time" | "monthly"
+  popular   Boolean  @default(false)
+  features  String   // JSON-encoded array of feature strings
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
