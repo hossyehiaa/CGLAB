@@ -20,7 +20,10 @@ export interface PricingPackage {
   slug: string;
   name: string;
   tagline: string;
+  /** Price in USD — primary display currency. */
   priceUsd: number;
+  /** Price in Egyptian Pounds — secondary display currency for the EG market. */
+  priceEgp: number;
   reelCount: number;
   cadence: "one-time" | "monthly";
   popular: boolean;
@@ -33,7 +36,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     slug: "single",
     name: "Single Reel",
     tagline: "Test the waters with one cinematic reel.",
-    priceUsd: 149,
+    priceUsd: 15,
+    priceEgp: 749,
     reelCount: 1,
     cadence: "one-time",
     popular: false,
@@ -50,7 +54,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     slug: "monthly-4",
     name: "Creator",
     tagline: "Steady content for growing channels.",
-    priceUsd: 499,
+    priceUsd: 57.07,
+    priceEgp: 2849,
     reelCount: 4,
     cadence: "monthly",
     popular: true,
@@ -68,7 +73,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     slug: "monthly-10",
     name: "Studio",
     tagline: "Full-scale content engine for serious brands.",
-    priceUsd: 1199,
+    priceUsd: 140.03,
+    priceEgp: 6990,
     reelCount: 10,
     cadence: "monthly",
     popular: false,

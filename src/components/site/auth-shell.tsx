@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { Logo } from "@/components/site/logo";
 
 /**
  * AuthShell — shared two-column layout for Login + Signup.
@@ -40,18 +41,10 @@ export function AuthShell({
         {/* Brand mark — top */}
         <Link
           href="/"
-          className="relative z-10 flex items-center gap-2.5 group"
+          className="relative z-10 flex items-center group"
+          aria-label="CGLAB home"
         >
-          <div className="relative h-8 w-8">
-            <div className="absolute inset-0 rounded-md border border-white/20" />
-            <div className="absolute inset-[3px] rounded-sm bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors" />
-            <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-              C
-            </span>
-          </div>
-          <span className="font-display text-lg font-semibold tracking-tight">
-            CGLAB
-          </span>
+          <Logo height={28} className="transition-opacity duration-300 group-hover:opacity-100" />
         </Link>
 
         {/* Editorial headline — middle */}
@@ -88,16 +81,8 @@ export function AuthShell({
       <section className="relative flex flex-col">
         {/* Mobile-only brand bar */}
         <div className="lg:hidden p-6 border-b border-white/[0.06]">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="relative h-8 w-8">
-              <div className="absolute inset-0 rounded-md border border-white/20" />
-              <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-                C
-              </span>
-            </div>
-            <span className="font-display text-lg font-semibold tracking-tight">
-              CGLAB
-            </span>
+          <Link href="/" className="flex items-center" aria-label="CGLAB home">
+            <Logo height={24} />
           </Link>
         </div>
 

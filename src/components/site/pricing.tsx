@@ -71,19 +71,26 @@ export function Pricing() {
                   {pkg.tagline}
                 </p>
 
-                {/* Price */}
-                <div className="flex items-baseline gap-1 mb-1">
+                {/* Price — EGP primary, USD secondary */}
+                <div className="flex items-baseline gap-1.5 mb-1">
                   <span className="text-display text-5xl md:text-6xl font-medium tracking-tight">
-                    ${pkg.priceUsd}
+                    {pkg.priceEgp.toLocaleString("en-US")}
+                  </span>
+                  <span className="text-sm text-white/55 font-medium">
+                    EGP
                   </span>
                   <span className="text-sm text-white/45">
                     /{pkg.cadence === "monthly" ? "mo" : "once"}
                   </span>
                 </div>
-                <p className="text-xs text-white/40 mb-8">
+                <p className="text-xs text-white/40 mb-1">
+                  ≈ ${pkg.priceUsd.toFixed(2)} USD ·{" "}
                   {pkg.cadence === "monthly"
-                    ? "Billed monthly · cancel anytime"
-                    : "One-time delivery · 5-day turnaround"}
+                    ? "billed monthly · cancel anytime"
+                    : "one-time delivery · 5-day turnaround"}
+                </p>
+                <p className="text-[11px] text-white/35 mb-8">
+                  Payment via InstaPay after brief submission
                 </p>
 
                 {/* CTA */}

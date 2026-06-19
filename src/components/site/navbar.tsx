@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { Logo } from "@/components/site/logo";
 
 const NAV_LINKS = [
   { label: "Process", href: "#process" },
@@ -34,17 +35,8 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10 flex items-center justify-between">
         {/* Brand */}
-        <Link href="/" className="group flex items-center gap-2.5">
-          <div className="relative h-8 w-8">
-            <div className="absolute inset-0 rounded-md border border-white/20" />
-            <div className="absolute inset-[3px] rounded-sm bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors" />
-            <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-              C
-            </span>
-          </div>
-          <span className="font-display text-lg font-semibold tracking-tight">
-            {BRAND.name}
-          </span>
+        <Link href="/" className="group flex items-center gap-2.5" aria-label="CGLAB home">
+          <Logo height={26} className="transition-opacity duration-300 group-hover:opacity-100" />
         </Link>
 
         {/* Desktop nav */}

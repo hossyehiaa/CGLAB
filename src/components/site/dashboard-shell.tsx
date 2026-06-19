@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, User, ChevronDown, Plus, ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/site/logo";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -57,17 +58,8 @@ export function DashboardShell({
         <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
           {/* Left — brand + area label */}
           <div className="flex items-center gap-4">
-            <Link href="/" className="group flex items-center gap-2.5">
-              <div className="relative h-8 w-8">
-                <div className="absolute inset-0 rounded-md border border-white/20" />
-                <div className="absolute inset-[3px] rounded-sm bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors" />
-                <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-                  C
-                </span>
-              </div>
-              <span className="hidden sm:block font-display text-lg font-semibold tracking-tight">
-                CGLAB
-              </span>
+            <Link href="/" className="group flex items-center" aria-label="CGLAB home">
+              <Logo height={24} className="transition-opacity duration-300 group-hover:opacity-100" />
             </Link>
             <span className="hidden md:block h-5 w-px bg-white/10" />
             <span className="hidden md:block text-mono-label text-white/45">

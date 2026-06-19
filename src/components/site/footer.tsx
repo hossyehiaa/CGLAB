@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { Logo } from "@/components/site/logo";
 
 const COLS = [
   {
@@ -75,16 +76,8 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
           {/* Brand col */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="relative h-8 w-8">
-                <div className="absolute inset-0 rounded-md border border-white/20" />
-                <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-                  C
-                </span>
-              </div>
-              <span className="font-display text-lg font-semibold tracking-tight">
-                {BRAND.name}
-              </span>
+            <div className="mb-4">
+              <Logo height={24} dim />
             </div>
             <p className="text-sm text-white/45 leading-relaxed max-w-xs">
               {BRAND.tagline} A productized AI media agency for brands who
