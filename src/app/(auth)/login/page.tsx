@@ -13,6 +13,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<AuthShell eyebrow="(Members) — Sign in"><div /></AuthShell>}>
+      <LoginForm />
+    </React.Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
