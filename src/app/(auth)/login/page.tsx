@@ -92,24 +92,24 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => {
-                setEmail("client@reelzak.studio");
-                setPassword("reelzak-client-2026");
+                setEmail("client@cglab.studio");
+                setPassword("cglab-client-2026");
               }}
               className="text-left p-2 rounded-md hover:bg-white/[0.04] transition-colors"
             >
               <span className="text-white/40">client →</span>{" "}
-              client@reelzak.studio / reelzak-client-2026
+              client@cglab.studio / cglab-client-2026
             </button>
             <button
               type="button"
               onClick={() => {
-                setEmail("admin@reelzak.studio");
-                setPassword("reelzak-admin-2026");
+                setEmail("admin@cglab.studio");
+                setPassword("cglab-admin-2026");
               }}
               className="text-left p-2 rounded-md hover:bg-white/[0.04] transition-colors"
             >
               <span className="text-white/40">admin  →</span>{" "}
-              admin@reelzak.studio / reelzak-admin-2026
+              admin@cglab.studio / cglab-admin-2026
             </button>
           </div>
         </div>
@@ -190,7 +190,7 @@ function LoginForm() {
 
         {/* Footer */}
         <p className="text-center text-sm text-white/50">
-          New to Reelzak?{" "}
+          New to CGLAB?{" "}
           <Link
             href="/signup"
             className="text-white underline underline-offset-4 hover:text-white"

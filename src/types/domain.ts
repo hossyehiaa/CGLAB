@@ -1,5 +1,5 @@
 /**
- * Reelzak — Shared Domain Types
+ * CGLAB — Shared Domain Types
  * Mirrors the Prisma models so client + server code share one vocabulary.
  */
 

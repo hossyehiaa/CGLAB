@@ -79,7 +79,7 @@ export function AdminOrdersClient({ orders }: AdminOrdersClientProps) {
       {/* ===================== FILTERS + SEARCH ===================== */}
       <div className="flex flex-col md:flex-row md:items-center gap-3 mb-5">
         {/* Status filter chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-reelzak pb-1 md:pb-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-cglab pb-1 md:pb-0">
           {(["ALL", ...ORDER_STATUS_FLOW] as FilterValue[]).map((f) => {
             const isActive = filter === f;
             const label = f === "ALL" ? "All" : ORDER_STATUS_META[f as OrderStatus].label;
@@ -139,7 +139,7 @@ export function AdminOrdersClient({ orders }: AdminOrdersClientProps) {
         </div>
       ) : (
         <div className="rounded-2xl border border-white/[0.06] overflow-hidden">
-          <div className="overflow-x-auto scrollbar-reelzak">
+          <div className="overflow-x-auto scrollbar-cglab">
             <table className="w-full min-w-[820px]">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-white/[0.015]">

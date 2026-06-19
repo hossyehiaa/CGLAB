@@ -1,8 +1,8 @@
-# Reelzak — AI-Generated Reels, Crafted by Humans
+# CGLAB — AI-Generated Reels, Crafted by Humans
 
-A productized AI media agency client portal. Clients submit briefs, the Reelzak team handles ideation → AI generation → editing, and delivers finished reels through the same portal.
+A productized AI media agency client portal. Clients submit briefs, the CGLAB team handles ideation → AI generation → editing, and delivers finished reels through the same portal.
 
-Built with **Next.js 16 · TypeScript · Tailwind CSS 4 · shadcn/ui · Framer Motion · Prisma · NextAuth · Vercel Blob**. Designed in a strict monochrome, ultra-premium aesthetic.
+Built with **Next.js 16 · TypeScript · Tailwind CSS 4 · shadcn/ui · Framer Motion · Prisma · NextAuth · Google Drive links**. Designed in a strict monochrome, ultra-premium aesthetic.
 
 ---
 
@@ -21,7 +21,7 @@ Built with **Next.js 16 · TypeScript · Tailwind CSS 4 · shadcn/ui · Framer M
 - Operations dashboard with per-stage pipeline counts and all-orders table.
 - Status filter chips + search across order #, brand, client, industry.
 - Slide-in order detail drawer with full brief breakdown, status pipeline visualization, "Advance to next" + "Skip to" controls.
-- Premium drag-drop file uploader with live progress bar.
+- Premium delivery-link attacher — admin pastes a Google Drive (or any URL) share link.
 - Forward-only status transitions enforced server-side + full audit trail (`OrderStatusUpdate` records).
 
 ---
@@ -52,8 +52,8 @@ Open `http://localhost:3000`.
 
 | Role   | Email                      | Password              |
 |--------|----------------------------|-----------------------|
-| Admin  | admin@reelzak.studio       | reelzak-admin-2026    |
-| Client | client@reelzak.studio      | reelzak-client-2026   |
+| Admin  | admin@cglab.studio       | cglab-admin-2026    |
+| Client | client@cglab.studio      | cglab-client-2026   |
 
 ---
 
@@ -64,25 +64,24 @@ Open `http://localhost:3000`.
 ```bash
 git init
 git add .
-git commit -m "feat: Reelzak productized service portal"
+git commit -m "feat: CGLAB productized service portal"
 git branch -M main
-git remote add origin https://github.com/hossyehiaa/Reelzak.git
+git remote add origin https://github.com/hossyehiaa/CGLAB.git
 git push -u origin main
 ```
 
 ### Step 2 — Create a Neon PostgreSQL database
 
 1. Go to **https://neon.tech** → Sign in with GitHub.
-2. Create a new project (e.g. `reelzak`).
+2. Create a new project (e.g. `cglab`).
 3. Copy the **pooled connection string** — it looks like:
    ```
    postgresql://USER:PASSWORD@ep-xxx-pooler.REGION.aws.neon.tech/neondb?sslmode=require
    ```
 
-### Step 3 — Create a Vercel Blob store (for video file uploads)
+### Step 3 — (Skipped) File storage via Google Drive
 
-1. Go to **https://vercel.com/dashboard/stores** → Create Blob Store → name it `reelzak-uploads`.
-2. Copy the resulting `BLOB_READ_WRITE_TOKEN`.
+CGLAB uses **Google Drive share links** for final reel delivery instead of hosting files. The admin pastes a Drive URL into the order drawer. No storage configuration needed — skip this step.
 
 ### Step 4 — Switch Prisma to PostgreSQL
 
@@ -104,7 +103,7 @@ bun run db:seed   # re-seeds the production DB with admin + demo client + sample
 
 ### Step 5 — Import to Vercel
 
-1. Go to **https://vercel.com/new** → Import the `hossyehiaa/Reelzak` repo.
+1. Go to **https://vercel.com/new** → Import the `hossyehiaa/CGLAB` repo.
 2. Vercel auto-detects Next.js — accept the defaults.
 3. Add the following **Environment Variables** (Project Settings → Environment Variables):
 
@@ -119,15 +118,15 @@ bun run db:seed   # re-seeds the production DB with admin + demo client + sample
 
 ### Step 6 — Post-deploy
 
-1. After the first successful deploy, copy your production URL (e.g. `https://reelzak-xxx.vercel.app`).
+1. After the first successful deploy, copy your production URL (e.g. `https://cglab-xxx.vercel.app`).
 2. Update the `NEXTAUTH_URL` env var in Vercel to that URL.
 3. Trigger a redeploy (Deployments → ⋮ → Redeploy).
-4. Visit the production URL, log in with `admin@reelzak.studio / reelzak-admin-2026`, and change the admin password by replacing the seeded user via Prisma Studio or a quick script:
+4. Visit the production URL, log in with `admin@cglab.studio / cglab-admin-2026`, and change the admin password by replacing the seeded user via Prisma Studio or a quick script:
 
    ```bash
    bunx prisma studio
    # Or hash a new password and update directly:
-   bunx tsx -e "import bcrypt from 'bcryptjs'; import {PrismaClient} from '@prisma/client'; const db=new PrismaClient(); db.user.update({where:{email:'admin@reelzak.studio'},data:{password:await bcrypt.hash('YOUR_NEW_PASSWORD',12)}}).then(()=>process.exit(0))"
+   bunx tsx -e "import bcrypt from 'bcryptjs'; import {PrismaClient} from '@prisma/client'; const db=new PrismaClient(); db.user.update({where:{email:'admin@cglab.studio'},data:{password:await bcrypt.hash('YOUR_NEW_PASSWORD',12)}}).then(()=>process.exit(0))"
    ```
 
 ---
@@ -145,8 +144,7 @@ src/
 │   │   ├── auth/signup/         # Signup endpoint
 │   │   └── orders/
 │   │       ├── route.ts         # GET list, POST create
-│   │       └── [id]/
-│   │           ├── route.ts     # GET one, PATCH status
+│   │       └── [id]/            # GET one, PATCH status + delivery link
 │   │           └── upload/      # POST multipart file upload
 │   ├── layout.tsx             # Root layout (fonts, theme, providers)
 │   ├── page.tsx               # Landing page
@@ -225,4 +223,4 @@ For production, consider adding: rate-limiting on auth endpoints, CSRF protectio
 
 ## 📄 License
 
-Proprietary — © Reelzak Studio.
+Proprietary — © CGLAB Studio.

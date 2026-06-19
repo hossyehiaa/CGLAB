@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import {
   X,
   Loader2,
-  UploadCloud,
+  ExternalLink,
   FileVideo,
   Check,
   ChevronRight,
@@ -19,7 +19,10 @@ import {
   MessageSquare,
   Clock,
   Download,
+  Save,
+  Trash2,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   ORDER_STATUS_FLOW,
@@ -170,7 +173,7 @@ export function OrderDetailDrawer({
         </div>
 
         {/* ===================== SCROLL BODY ===================== */}
-        <div className="flex-1 overflow-y-auto scrollbar-reelzak">
+        <div className="flex-1 overflow-y-auto scrollbar-cglab">
           {/* ---------- CURRENT STATUS + ADVANCE ---------- */}
           <section className="p-6 border-b border-white/[0.06]">
             <p className="text-mono-label text-white/40 mb-4">
@@ -341,17 +344,19 @@ export function OrderDetailDrawer({
                     Open
                   </a>
                 </div>
-                <UploadDropzone
+                <DriveLinkInput
                   orderId={order.id}
+                  existingUrl={order.deliveryFileUrl}
                   existingFileName={order.deliveryFileName}
-                  onUploaded={onMutated}
+                  onSaved={onMutated}
                 />
               </div>
             ) : (
-              <UploadDropzone
+              <DriveLinkInput
                 orderId={order.id}
+                existingUrl={null}
                 existingFileName={null}
-                onUploaded={onMutated}
+                onSaved={onMutated}
               />
             )}
           </section>
@@ -397,176 +402,205 @@ function BriefRow({
 }
 
 // ===========================================================================
-// UploadDropzone — the premium drag-and-drop file uploader
+// DriveLinkInput — premium Google Drive link attacher
 // ===========================================================================
-function UploadDropzone({
+// Instead of uploading the file to our own storage, the admin pastes a
+// Google Drive (or any URL) share link. We PATCH it onto the order, which
+// lets us mark it as Delivered.
+//
+// Why this approach:
+//   - Zero storage cost (Drive is free up to 15GB)
+//   - Admin can update / replace the file in Drive without redeploying
+//   - Client downloads directly from Drive — no proxy bandwidth
+//   - Works for Dropbox, WeTransfer, S3, anything with a URL
+// ===========================================================================
+function DriveLinkInput({
   orderId,
+  existingUrl,
   existingFileName,
-  onUploaded,
+  onSaved,
 }: {
   orderId: string;
+  existingUrl: string | null;
   existingFileName: string | null;
-  onUploaded: () => void;
+  onSaved: () => void;
 }) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const [dragging, setDragging] = React.useState(false);
-  const [uploading, setUploading] = React.useState(false);
-  const [progress, setProgress] = React.useState(0);
+  const [url, setUrl] = React.useState(existingUrl ?? "");
+  const [fileName, setFileName] = React.useState(existingFileName ?? "");
+  const [saving, setSaving] = React.useState(false);
+  const [removing, setRemoving] = React.useState(false);
 
-  async function handleFile(file: File) {
-    // Validate client-side first
-    const allowed = [".mp4", ".mov", ".webm", ".m4v"];
-    const ext = "." + (file.name.split(".").pop() ?? "").toLowerCase();
-    if (!allowed.includes(ext)) {
-      toast.error("Unsupported file type. Use MP4, MOV, or WebM.");
-      return;
-    }
-    if (file.size > 500 * 1024 * 1024) {
-      toast.error("File too large. Max 500MB.");
-      return;
-    }
+  // Sync local state if the order changes externally
+  React.useEffect(() => {
+    setUrl(existingUrl ?? "");
+    setFileName(existingFileName ?? "");
+  }, [existingUrl, existingFileName]);
 
-    setUploading(true);
-    setProgress(0);
-
+  // Drive link validation — accept drive.google.com, dropbox, wetransfer,
+  // or any URL that starts with http(s)://
+  function isValidUrl(v: string): boolean {
+    if (!v.trim()) return false;
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Use XHR for progress events — fetch doesn't support upload progress
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", `/api/orders/${orderId}/upload`);
-        xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable) {
-            setProgress(Math.round((e.loaded / e.total) * 100));
-          }
-        });
-        xhr.addEventListener("load", () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve();
-          } else {
-            try {
-              const data = JSON.parse(xhr.responseText);
-              reject(new Error(data?.error ?? "Upload failed"));
-            } catch {
-              reject(new Error("Upload failed"));
-            }
-          }
-        });
-        xhr.addEventListener("error", () => reject(new Error("Network error")));
-        xhr.send(formData);
-      });
-
-      toast.success(
-        existingFileName
-          ? "Delivery file replaced."
-          : "File attached. You can now mark the order as Delivered.",
-      );
-      onUploaded();
-    } catch (err: any) {
-      toast.error(err?.message ?? "Upload failed");
-    } finally {
-      setUploading(false);
-      setProgress(0);
+      const u = new URL(v.trim());
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch {
+      return false;
     }
   }
 
-  function onDrop(e: React.DragEvent) {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) handleFile(file);
+  // Try to extract a filename from a Drive URL (?usp=sharing&resourcekey=...
+  // or /file/d/FILE_ID/view). Falls back to whatever the user typed.
+  function guessFileName(urlStr: string): string {
+    const trimmed = urlStr.trim();
+    // Try /file/d/<id>/view pattern
+    const driveMatch = trimmed.match(/\/file\/d\/([^/?#]+)/);
+    if (driveMatch) {
+      return `drive-${driveMatch[1].slice(0, 12)}.mp4`;
+    }
+    // Try generic /<filename>.mp4 pattern at end of URL
+    const extMatch = trimmed.match(/\/([^/?#]+\.(mp4|mov|webm|m4v))(?:$|[?#])/i);
+    if (extMatch) {
+      return extMatch[1];
+    }
+    return existingFileName ?? "Final reel";
   }
 
-  function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-    // Reset so the same file can be picked again after removal
-    e.target.value = "";
+  const canSave = isValidUrl(url) && !saving;
+  const isDirty = url.trim() !== (existingUrl ?? "").trim();
+
+  async function save() {
+    if (!canSave || !isDirty) return;
+    setSaving(true);
+    try {
+      const trimmedUrl = url.trim();
+      const guessedName = fileName.trim() || guessFileName(trimmedUrl);
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deliveryFileUrl: trimmedUrl,
+          deliveryFileName: guessedName,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data?.error ?? "Could not save link");
+        return;
+      }
+      toast.success(
+        existingUrl ? "Delivery link updated." : "Link attached. You can now mark the order as Delivered.",
+      );
+      onSaved();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove() {
+    setRemoving(true);
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deliveryFileUrl: "",
+          deliveryFileName: "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data?.error ?? "Could not remove link");
+        return;
+      }
+      toast.success("Delivery link removed.");
+      onSaved();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setRemoving(false);
+    }
   }
 
   return (
-    <div
-      onDragOver={(e) => {
-        e.preventDefault();
-        if (!uploading) setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={onDrop}
-      onClick={() => !uploading && inputRef.current?.click()}
-      className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-all duration-300 cursor-pointer overflow-hidden ${
-        dragging
-          ? "border-white/50 bg-white/[0.06] scale-[1.01]"
-          : "border-white/[0.12] bg-white/[0.015] hover:border-white/30 hover:bg-white/[0.03]"
-      } ${uploading ? "pointer-events-none" : ""}`}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept="video/mp4,video/quicktime,video/webm,video/x-m4v,.mp4,.mov,.webm,.m4v"
-        onChange={onInputChange}
-        className="hidden"
-      />
-
-      {/* Upload progress overlay */}
-      {uploading ? (
-        <div className="flex flex-col items-center gap-4 py-2">
-          <Loader2 className="h-7 w-7 animate-spin text-white/70" />
-          <div className="w-full max-w-[240px]">
-            <div className="flex items-center justify-between text-xs text-white/60 mb-2">
-              <span>Uploading…</span>
-              <span className="font-mono">{progress}%</span>
-            </div>
-            <div className="h-1 rounded-full bg-white/[0.08] overflow-hidden">
-              <motion.div
-                className="h-full bg-white/80"
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-3">
-          <motion.div
-            animate={dragging ? { y: -4, scale: 1.1 } : { y: 0, scale: 1 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="h-12 w-12 rounded-full border border-white/20 bg-white/[0.03] flex items-center justify-center"
+    <div className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-5 space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <p className="text-mono-label text-white/55">
+          {existingUrl ? "Replace link" : "Attach delivery link"}
+        </p>
+        {existingUrl && (
+          <button
+            onClick={remove}
+            disabled={removing}
+            className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors disabled:opacity-50"
           >
-            <UploadCloud className="h-5 w-5 text-white/70" />
-          </motion.div>
-          <div>
-            <p className="text-sm font-medium text-white/85">
-              {dragging
-                ? "Drop to upload"
-                : existingFileName
-                  ? "Replace delivery file"
-                  : "Drop the final reel here"}
-            </p>
-            <p className="text-xs text-white/45 mt-1">
-              or click to browse · MP4, MOV, WebM · up to 500MB
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Decorative grid while dragging */}
-      <AnimatePresence>
-        {dragging && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="pointer-events-none absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)",
-              backgroundSize: "24px 24px",
-            }}
-          />
+            {removing ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <Trash2 className="h-3 w-3" />
+            )}
+            Remove
+          </button>
         )}
-      </AnimatePresence>
+      </div>
+
+      {/* URL input */}
+      <div className="space-y-2">
+        <Input
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://drive.google.com/file/d/.../view?usp=sharing"
+          className="h-11 bg-white/[0.02] border-white/10 focus:border-white/30 focus-visible:ring-white/20 placeholder:text-white/25 font-mono text-sm"
+        />
+        {url && !isValidUrl(url) && (
+          <p className="text-xs text-white/60">
+            Enter a valid URL starting with http:// or https://
+          </p>
+        )}
+      </div>
+
+      {/* Optional filename override */}
+      <div className="space-y-2">
+        <p className="text-[11px] tracking-wider uppercase text-white/40">
+          Display name (optional)
+        </p>
+        <Input
+          type="text"
+          value={fileName}
+          onChange={(e) => setFileName(e.target.value)}
+          placeholder={guessFileName(url) || "final-reel.mp4"}
+          className="h-10 bg-white/[0.02] border-white/10 focus:border-white/30 focus-visible:ring-white/20 placeholder:text-white/25 text-sm"
+        />
+      </div>
+
+      {/* Helper text */}
+      <p className="text-xs text-white/40 leading-relaxed">
+        Paste a Google Drive share link (or Dropbox, WeTransfer, any URL).
+        Make sure the file is publicly viewable. The client will see this
+        link in their portal and can download directly.
+      </p>
+
+      {/* Save button */}
+      <Button
+        onClick={save}
+        disabled={!canSave || !isDirty}
+        className="group w-full h-10 rounded-full bg-white text-black hover:bg-white/90 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white"
+      >
+        {saving ? (
+          <>
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Saving…
+          </>
+        ) : (
+          <>
+            <Save className="h-3.5 w-3.5" />
+            {existingUrl ? "Update link" : "Attach link"}
+          </>
+        )}
+      </Button>
     </div>
   );
 }

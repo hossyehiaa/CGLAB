@@ -131,7 +131,7 @@ export function Pricing() {
         >
           Need a higher volume or custom cadence?{" "}
           <Link
-            href="mailto:hello@reelzak.studio"
+            href="mailto:hello@cglab.studio"
             className="text-white/70 underline underline-offset-4 hover:text-white"
           >
             Talk to us

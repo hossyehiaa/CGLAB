@@ -26,7 +26,7 @@ const COLS = [
   {
     title: "Studio",
     links: [
-      { label: "hello@reelzak.studio", href: "mailto:hello@reelzak.studio" },
+      { label: "hello@cglab.studio", href: "mailto:hello@cglab.studio" },
       { label: "Twitter / X", href: BRAND.social.twitter, external: true },
       { label: "Instagram", href: BRAND.social.instagram, external: true },
       { label: "YouTube", href: BRAND.social.youtube, external: true },
@@ -79,7 +79,7 @@ export function Footer() {
               <div className="relative h-8 w-8">
                 <div className="absolute inset-0 rounded-md border border-white/20" />
                 <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-                  R
+                  C
                 </span>
               </div>
               <span className="font-display text-lg font-semibold tracking-tight">

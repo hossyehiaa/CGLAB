@@ -1,8 +1,8 @@
 import { db } from "@/lib/db";
 
 /**
- * Generate the next human-friendly order number, e.g. RZK-2026-0004.
- * Format: RZK-{YEAR}-{4-digit zero-padded sequence}.
+ * Generate the next human-friendly order number, e.g. CGL-2026-0004.
+ * Format: CGL-{YEAR}-{4-digit zero-padded sequence}.
  *
  * Sequence is derived from the count of orders created in the current year.
  * This is intentionally simple — for high-volume production you'd want a
@@ -17,7 +17,7 @@ export async function generateOrderNumber(): Promise<string> {
   });
 
   const seq = (count + 1).toString().padStart(4, "0");
-  return `RZK-${year}-${seq}`;
+  return `CGL-${year}-${seq}`;
 }
 
 /**

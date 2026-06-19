@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ==========================================================================
-   REELZAK — Ultra-Premium Monochrome
+   CGLAB — Ultra-Premium Monochrome
    Strict black & white. No hue. No saturation. Only luminance.
    ========================================================================== */
 
@@ -89,7 +89,7 @@
 }
 
 /* ==========================================================================
-   DARK MODE — the only mode Reelzak ships in
+   DARK MODE — the only mode CGLAB ships in
    Pure luminance scale. 0 = pure black. 1 = pure white.
    ========================================================================== */
 .dark {
@@ -146,14 +146,14 @@
   }
 
   /* Subtle radial vignette — pushes the eye toward content center */
-  .reelzak-bg {
+  .cglab-bg {
     background-color: var(--background);
     background-image:
       radial-gradient(ellipse 90% 60% at 50% -10%, oklch(1 0 0 / 0.06), transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 100%, oklch(1 0 0 / 0.03), transparent 60%);
   }
   /* Fine film grain noise — barely perceptible */
-  .reelzak-grain::before {
+  .cglab-grain::before {
     content: "";
     position: fixed;
     inset: 0;
@@ -164,7 +164,7 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   /* Faint architectural grid — the avant-garde blueprint feel */
-  .reelzak-grid::after {
+  .cglab-grid::after {
     content: "";
     position: fixed;
     inset: 0;
@@ -266,13 +266,13 @@
   }
 
   /* Custom scrollbar — monochrome */
-  .scrollbar-reelzak::-webkit-scrollbar { width: 6px; height: 6px; }
-  .scrollbar-reelzak::-webkit-scrollbar-track { background: transparent; }
-  .scrollbar-reelzak::-webkit-scrollbar-thumb {
+  .scrollbar-cglab::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-cglab::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-cglab::-webkit-scrollbar-thumb {
     background: oklch(1 0 0 / 0.12);
     border-radius: 9999px;
   }
-  .scrollbar-reelzak::-webkit-scrollbar-thumb:hover {
+  .scrollbar-cglab::-webkit-scrollbar-thumb:hover {
     background: oklch(1 0 0 / 0.22);
   }
 

@@ -85,7 +85,7 @@ export default function SignupPage() {
         return;
       }
 
-      toast.success("Welcome to Reelzak.");
+      toast.success("Welcome to CGLAB.");
       router.push("/dashboard");
       router.refresh();
     } catch (err) {

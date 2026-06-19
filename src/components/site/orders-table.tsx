@@ -36,7 +36,7 @@ function daysUntil(d: string | Date | null): string {
 export function OrdersTable({ orders, showClient = false }: OrdersTableProps) {
   return (
     <div className="rounded-2xl border border-white/[0.06] overflow-hidden">
-      <div className="overflow-x-auto scrollbar-reelzak">
+      <div className="overflow-x-auto scrollbar-cglab">
         <table className="w-full min-w-[760px]">
           {/* HEADER */}
           <thead>

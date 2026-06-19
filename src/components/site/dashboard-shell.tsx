@@ -62,11 +62,11 @@ export function DashboardShell({
                 <div className="absolute inset-0 rounded-md border border-white/20" />
                 <div className="absolute inset-[3px] rounded-sm bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors" />
                 <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-                  R
+                  C
                 </span>
               </div>
               <span className="hidden sm:block font-display text-lg font-semibold tracking-tight">
-                Reelzak
+                CGLAB
               </span>
             </Link>
             <span className="hidden md:block h-5 w-px bg-white/10" />
@@ -162,7 +162,7 @@ export function DashboardShell({
       {/* ====================== FOOTER ====================== */}
       <footer className="mt-auto border-t border-white/[0.06] py-6">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/40">
-          <span>© {new Date().getFullYear()} Reelzak Studio</span>
+          <span>© {new Date().getFullYear()} CGLAB Studio</span>
           <span className="font-mono">v.01 / 2026</span>
         </div>
       </footer>

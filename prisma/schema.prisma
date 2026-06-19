@@ -1,5 +1,5 @@
 // ==========================================================================
-// REELZAK — Prisma Schema
+// CGLAB — Prisma Schema
 // ==========================================================================
 // Models:
 //   User    — clients + admins (role-based)
@@ -47,7 +47,7 @@ enum Role {
 // ---------------------------------------------------------------------------
 model Order {
   id              String         @id @default(cuid())
-  orderNumber     String         @unique // human-friendly: RZK-2026-0001
+  orderNumber     String         @unique // human-friendly: CGL-2026-0001
   clientId        String
   client          User           @relation(fields: [clientId], references: [id], onDelete: Cascade)
   brandName       String

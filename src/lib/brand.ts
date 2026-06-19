@@ -1,18 +1,18 @@
 /**
- * Reelzak — Brand constants
+ * CGLAB — Brand constants
  * Single source of truth for brand name, taglines, package definitions.
  */
 
 export const BRAND = {
-  name: "Reelzak",
+  name: "CGLAB",
   tagline: "AI-Generated Reels. Crafted by Humans.",
   description:
     "A productized AI media agency. You submit a brief. Our team handles ideation, AI generation, and editing. You receive a finished reel.",
-  email: "hello@reelzak.studio",
+  email: "hello@cglab.studio",
   social: {
-    twitter: "https://twitter.com/reelzak",
-    instagram: "https://instagram.com/reelzak",
-    youtube: "https://youtube.com/@reelzak",
+    twitter: "https://twitter.com/cglab",
+    instagram: "https://instagram.com/cglab",
+    youtube: "https://youtube.com/@cglab",
   },
 } as const;
 

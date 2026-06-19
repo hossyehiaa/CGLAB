@@ -5,7 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ThemeProviderProps } from "next-themes";
 
 /**
- * Reelzak Theme Provider
+ * CGLAB Theme Provider
  * Forces dark mode by default — the cinematic experience is the brand.
  */
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {

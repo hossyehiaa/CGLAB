@@ -1,21 +1,21 @@
 ---
 Task ID: step-1
 Agent: main (Super Z)
-Task: Step 1 — Initialize the Next.js project and set up the global theme, Tailwind config, and basic layout for Reelzak.
+Task: Step 1 — Initialize the Next.js project and set up the global theme, Tailwind config, and basic layout for CGLAB.
 
 Work Log:
 - Loaded the fullstack-dev skill and initialized the project environment.
 - Audited the existing scaffold: Next.js 16 + TS + Tailwind 4 + shadcn/ui + Prisma + Framer Motion + NextAuth + next-themes + Zustand all already installed.
 - Designed the cinematic dark theme: deep charcoal base (oklch 0.13 0.006 280) + amber/gold primary (oklch 0.83 0.16 75) + magenta/violet accent (oklch 0.68 0.24 320). Avoided indigo/blue per skill rules.
-- Rewrote `src/app/globals.css` with full light + dark token sets, a `.reelzak-bg` radial-gradient backdrop, a `.reelzak-grain` film-grain overlay, and custom utilities: `.text-gradient-gold`, `.text-gradient-accent`, `.border-gradient-gold`, `.glow-gold`, `.glow-accent`, `.scrollbar-reelzak`.
+- Rewrote `src/app/globals.css` with full light + dark token sets, a `.cglab-bg` radial-gradient backdrop, a `.cglab-grain` film-grain overlay, and custom utilities: `.text-gradient-gold`, `.text-gradient-accent`, `.border-gradient-gold`, `.glow-gold`, `.glow-accent`, `.scrollbar-cglab`.
 - Extended `tailwind.config.ts` with `font-display` (Space Grotesk) and `font-sans` (Inter), plus custom keyframes for fade-up / fade-in / scale-in / shimmer / pulse-glow / float.
 - Created `src/components/providers/theme-provider.tsx` — wraps next-themes with `defaultTheme="dark"` and `enableSystem={false}` so the cinematic theme is always on.
-- Rewrote `src/app/layout.tsx` — wired Inter + Space Grotesk + Geist Mono fonts, set `<html className="dark">`, applied `reelzak-bg reelzak-grain` backdrop to body, mounted ThemeProvider + Toaster + Sonner (dark), updated metadata for Reelzak SEO.
+- Rewrote `src/app/layout.tsx` — wired Inter + Space Grotesk + Geist Mono fonts, set `<html className="dark">`, applied `cglab-bg cglab-grain` backdrop to body, mounted ThemeProvider + Toaster + Sonner (dark), updated metadata for CGLAB SEO.
 - Updated `prisma/schema.prisma` with the full domain: User (with Role enum), Order (with OrderStatus enum), OrderStatusUpdate (audit trail), Package (pricing tiers). Six-stage status flow: PENDING -> IDEATION -> AI_GENERATION -> EDITING -> READY_FOR_REVIEW -> DELIVERED.
 - Ran `bun run db:push` — schema applied successfully to local SQLite, Prisma Client generated.
 - Created `src/types/domain.ts` — shared TS types + ORDER_STATUS_META badge color map + ORDER_STATUS_FLOW array.
 - Created `src/lib/brand.ts` — BRAND constant, PRICING_PACKAGES array (Single $149 / Creator $499 / Studio $1199), FAQ_ITEMS array.
-- Created `public/reelzak-mark.svg` (square logo mark) and `public/reelzak-logo.svg` (horizontal wordmark) — both gradient amber/gold.
+- Created `public/cglab-mark.svg` (square logo mark) and `public/cglab-logo.svg` (horizontal wordmark) — both gradient amber/gold.
 - Created `.env.example` documenting SQLite (local) vs Neon PostgreSQL (prod) swap, NextAuth secret, and Vercel Blob token for file uploads.
 - Wrote a "Step 1 complete" preview page at `src/app/page.tsx` that showcases: hero with gradient text, three "what was built" cards, full Order Status Pipeline visualization with badges, typography + color token swatches, shadcn/ui button + badge strip.
 - Updated `next.config.ts` with `allowedDevOrigins: ["*.space-z.ai"]` to silence cross-origin dev warnings.
@@ -31,17 +31,17 @@ Stage Summary:
 ---
 Task ID: step-2
 Agent: main (Super Z)
-Task: Step 2 — Build the static Landing Page for Reelzak. Plus mid-task pivot: redesign the entire theme to strict monochrome black & white per user direction (no yellow, no neon, no color).
+Task: Step 2 — Build the static Landing Page for CGLAB. Plus mid-task pivot: redesign the entire theme to strict monochrome black & white per user direction (no yellow, no neon, no color).
 
 Work Log:
-- Redesigned globals.css: stripped all amber/gold/magenta tokens. New palette is pure luminance — background oklch(0.055 0 0), foreground oklch(0.97 0 0), primary pure white on dark, all borders white-at-low-opacity. Added three backdrop layers: `.reelzak-bg` (white radial vignette), `.reelzak-grain` (35% opacity film grain), `.reelzak-grid` (faint 80px architectural grid with radial mask).
+- Redesigned globals.css: stripped all amber/gold/magenta tokens. New palette is pure luminance — background oklch(0.055 0 0), foreground oklch(0.97 0 0), primary pure white on dark, all borders white-at-low-opacity. Added three backdrop layers: `.cglab-bg` (white radial vignette), `.cglab-grain` (35% opacity film grain), `.cglab-grid` (faint 80px architectural grid with radial mask).
 - Added grayscale glassmorphism utilities: `.glass`, `.glass-strong`, `.glass-card` (with hover lift). Added `.text-display`, `.text-serif-italic`, `.text-mono-label` for the editorial type system. Replaced colored gradients with `.text-gradient-platinum` and `.text-gradient-ghost`. Replaced `.glow-gold` with `.glow-white-soft` (only for primary CTAs). Added `.hairline` divider utility and `.marquee-track` keyframes.
 - Updated tailwind.config.ts: added `font-serif` (Instrument Serif), `letterSpacing.tightest/tighter/widest`, cleaner keyframes (fade-up, fade-in, scale-in, blur-in, float) with cubic-bezier(0.22, 1, 0.36, 1) easing.
-- Updated layout.tsx: loaded Instrument Serif alongside Inter + Space Grotesk + Geist Mono. Applied `reelzak-bg reelzak-grain reelzak-grid` to body. Sonner toast themed to match.
+- Updated layout.tsx: loaded Instrument Serif alongside Inter + Space Grotesk + Geist Mono. Applied `cglab-bg cglab-grain cglab-grid` to body. Sonner toast themed to match.
 - Rewrote ORDER_STATUS_META in src/types/domain.ts: every status now uses bg-white/XX text-white/XX border-white/XX — strictly grayscale, with progressive opacity from PENDING (faintest) to DELIVERED (solid white).
-- Rewrote Reelzak SVG logos to pure monochrome (white on transparent).
+- Rewrote CGLAB SVG logos to pure monochrome (white on transparent).
 - Built the landing page as 7 modular components in src/components/site/:
-  • navbar.tsx — fixed header with scroll-aware background blur, mobile hamburger menu, monochrome Reelzak mark
+  • navbar.tsx — fixed header with scroll-aware background blur, mobile hamburger menu, monochrome CGLAB mark
   • hero.tsx — oversized display headline ("AI-generated reels, crafted by humans.") with italic serif accents, dual CTAs, full-width showreel video placeholder with grid overlay + REC corner labels + center play button, 4-column stats strip
   • marquee.tsx — infinite horizontal scroll of pipeline words (Ideation · AI Generation · Editing...) with edge fades
   • manifesto.tsx — large editorial paragraph "AI is a tool, not a substitute for taste", with three principle columns
@@ -85,14 +85,14 @@ Work Log:
 - Created src/components/providers/session-provider.tsx — wraps next-auth/react SessionProvider for client components.
 - Wrapped the root layout's children in <SessionProvider> so useSession / signIn work on any client page.
 - Created scripts/seed.ts + added `db:seed` script to package.json. Seeds:
-    • Admin:  admin@reelzak.studio / reelzak-admin-2026
-    • Client: client@reelzak.studio / reelzak-client-2026 (brandName: "Castellano Atelier")
+    • Admin:  admin@cglab.studio / cglab-admin-2026
+    • Client: client@cglab.studio / cglab-client-2026 (brandName: "Castellano Atelier")
     • 3 sample orders for the demo client (statuses: EDITING, IDEATION, DELIVERED) — gives Steps 4/5 something to render.
 - Ran `bun run db:seed` — all rows created successfully.
 
 UI (strict monochrome glass aesthetic):
 - Built src/components/site/auth-shell.tsx — shared two-column layout for login + signup.
-    • Left panel (lg+): cinematic brand side with grid overlay, white radial hotspot, Reelzak mark, oversized display headline "The reel is everything." (with serif italic accent), editorial paragraph, and a client quote at the bottom.
+    • Left panel (lg+): cinematic brand side with grid overlay, white radial hotspot, CGLAB mark, oversized display headline "The reel is everything." (with serif italic accent), editorial paragraph, and a client quote at the bottom.
     • Right panel: form container with mobile-only brand bar; form centered with max-w-md.
 - Built src/app/(auth)/login/page.tsx — client component.
     • Demo-account hint card with clickable buttons that autofill credentials.
@@ -116,9 +116,9 @@ Verification (Agent Browser):
 4. /dashboard shows "Signed in as Mira Castellano" — confirms JWT session extension (name + role) works end-to-end.
 5. Tried /admin as a client → middleware redirected to /dashboard (forbidden path blocked). ✓
 6. Signed out → bounced to /login?callbackUrl=...
-7. Logged in as admin (admin@reelzak.studio) → redirected to /admin, page shows "Admin access granted." ✓
+7. Logged in as admin (admin@cglab.studio) → redirected to /admin, page shows "Admin access granted." ✓
 8. Cleared cookies, tried /dashboard unauthenticated → middleware bounced to /login?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2Fdashboard. ✓
-9. Signed up a brand new user (Jordan Hayes / jordan.hayes.test@reelzak.studio) → account created (201) → auto-signin → landed on /dashboard with "Signed in as Jordan Hayes" and welcome toast. ✓
+9. Signed up a brand new user (Jordan Hayes / jordan.hayes.test@cglab.studio) → account created (201) → auto-signin → landed on /dashboard with "Signed in as Jordan Hayes" and welcome toast. ✓
 10. Tried signing up again with the existing client email → "An account with that email already exists" inline error (409 path). ✓
 11. Tried logging in with the right email but wrong password → "Invalid email or password." inline error (401 path). ✓
 12. Captured screenshots at desktop (1440×900) and mobile (375×812) for both /login and /signup:
@@ -128,7 +128,7 @@ Verification (Agent Browser):
 
 Stage Summary:
 - Authentication system complete: signup → auto-login → dashboard, login → role-aware redirect, signout, middleware-protected routes, admin-only /admin gate, all demo flows verified in-browser.
-- Two demo accounts seeded and ready: client@reelzak.studio / admin@reelzak.studio.
+- Two demo accounts seeded and ready: client@cglab.studio / admin@cglab.studio.
 - Three sample orders seeded for the demo client so Step 4's dashboard has data on first load.
 - Aesthetic stays strictly monochrome: glass panels, white-on-dark forms, serif italic accents in the brand panel, hairline dividers, glow-white-soft on the primary CTA.
 - Lint clean (0 errors, 0 warnings).
@@ -144,7 +144,7 @@ Work Log:
 - Built src/app/api/orders/route.ts:
     • GET /api/orders — returns current user's orders (or all orders for admins), includes joined client info, sorted by createdAt desc.
     • POST /api/orders — client-only. Zod-validated brief (brandName, industry, objective enum, style, targetAudience, keyMessage, referenceLinks array, additionalNotes, deadline). Generates order number, JSON-encodes brief details, creates the order with status=PENDING, and caches brandName on the user record. Returns 201.
-- Built src/components/site/dashboard-shell.tsx — shared layout for client + admin dashboards. Sticky topbar with: Reelzak mark + area label ("Client Portal" / "Admin"), optional back link, optional primary action (New Order button), and an animated user dropdown menu (avatar initials, name, email, role chip, sign-out). Footer at the bottom (mt-auto).
+- Built src/components/site/dashboard-shell.tsx — shared layout for client + admin dashboards. Sticky topbar with: CGLAB mark + area label ("Client Portal" / "Admin"), optional back link, optional primary action (New Order button), and an animated user dropdown menu (avatar initials, name, email, role chip, sign-out). Footer at the bottom (mt-auto).
 - Built src/components/site/orders-table.tsx — sortable, responsive table. Columns: Order (# + created date), Brand (+ industry), Status (badge with colored dot — strictly grayscale ladder), Deadline (absolute + relative "in 8d" / "Xd overdue"), Open (circular chevron link). AnimatePresence row-by-row stagger on mount. Optional showClient column for admin view.
 - Built src/components/site/delivered-files.tsx — grid of glass cards for DELIVERED orders. Each card: video thumbnail placeholder with grid overlay + "Delivered" badge + dimensions label, order number, brand name, delivery date, Download (white CTA) + Open-in-new-tab buttons.
 - Built src/app/(dashboard)/dashboard/page.tsx — server component. Calls getCurrentUser(), redirects to /login if unauthenticated. Fetches user's orders via Prisma, splits into active vs delivered. Renders: welcome header with serif italic name accent, 4-stat grid (In production / Total / Delivered / Repeat rate), Active Orders section (or EmptyOrders empty state with "Start your first project" CTA), Delivered Files section (only if delivered.length > 0).
@@ -165,7 +165,7 @@ Work Log:
 - Built src/app/(dashboard)/new-order/page.tsx — server component, requires CLIENT role (admins redirected to /admin), renders the DashboardShell with a back link + the BriefingForm.
 
 Verification (Agent Browser):
-1. Logged in as demo client (client@reelzak.studio) → redirected to /dashboard.
+1. Logged in as demo client (client@cglab.studio) → redirected to /dashboard.
 2. Dashboard renders with: welcome header "Welcome back, Mira.", 4-stat grid, 2 active orders (RZK-2026-0002 Ideation + RZK-2026-0001 Editing) with relative deadline labels ("in 8d", "in 3d"), 1 delivered file (Castellano Atelier) with Download button.
 3. Screenshot: download/step4-dashboard.png
 4. Clicked "New Order" → navigated to /new-order → Step 1 (Brand & Industry) rendered, Continue button disabled (correct).
@@ -225,13 +225,13 @@ Work Log:
     • Replaces existing file if one was already attached.
 
 Verification (Agent Browser):
-1. Logged in as admin (admin@reelzak.studio) → redirected to /admin.
+1. Logged in as admin (admin@cglab.studio) → redirected to /admin.
 2. Admin dashboard rendered: 4 orders visible (Lumen Coffee + 3 Castellano Atelier), 6 filter chips with correct counts (All 4, Pending 1, Ideation 1, Editing 1, Delivered 1), pipeline overview tiles matching.
 3. Screenshot: download/step5-admin-dashboard.png (full page).
 4. Clicked Lumen Coffee (RZK-2026-0004, Pending) → drawer slid in from the right with smooth animation. Showed: order number, brand, full brief details (Objective: Sales, Style: Cinematic, Audience, Key message, References with clickable link, Deadline), "Advance to Ideation" CTA, "Skip to:" chips, and the upload dropzone.
 5. Screenshot: download/step5-order-drawer.png (drawer open).
 6. Clicked "Advance to Ideation" → status updated, page reloaded, filter chips updated (Pending 0, Ideation 2).
-7. Verified the audit trail in the DB: OrderStatusUpdate row created with fromStatus=PENDING, toStatus=IDEATION, changedBy=admin@reelzak.studio, timestamp recorded.
+7. Verified the audit trail in the DB: OrderStatusUpdate row created with fromStatus=PENDING, toStatus=IDEATION, changedBy=admin@cglab.studio, timestamp recorded.
 8. Tested file upload via the dropzone (synthetic 36-byte MP4 file): POST /api/orders/{id}/upload returned 201, file saved to /public/uploads/RZK-2026-0004/{uuid}.mp4, drawer reloaded and showed the file card with filename + URL + Open button.
 9. Screenshot: download/step5-drawer-with-file.png.
 10. Traversed the full pipeline: Pending → Ideation → AI Generation → Editing → Ready for Review → Delivered. Each step recorded in the audit trail. Final DB state: status=DELIVERED, file=test-reel.mp4, url=/uploads/RZK-2026-0004/{uuid}.mp4.

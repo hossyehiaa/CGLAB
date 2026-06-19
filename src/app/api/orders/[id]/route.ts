@@ -15,7 +15,11 @@ const VALID_STATUSES = new Set<OrderStatus>(ORDER_STATUS_FLOW);
 
 // ---------------------------------------------------------------------------
 // PATCH /api/orders/[id] — update an order's status (and optionally attach a
-// delivery file). Admin-only.
+// delivery link). Admin-only.
+//
+// deliveryFileUrl accepts:
+//   - a valid http(s) URL (Google Drive, Dropbox, WeTransfer, S3, etc.)
+//   - an empty string "" (to clear the existing link)
 // ---------------------------------------------------------------------------
 const PatchSchema = z.object({
   status: z
@@ -28,7 +32,13 @@ const PatchSchema = z.object({
       "DELIVERED",
     ])
     .optional(),
-  deliveryFileUrl: z.string().url().optional(),
+  deliveryFileUrl: z
+    .string()
+    .refine(
+      (v) => v === "" || /^https?:\/\/.+/i.test(v),
+      "Must be a valid http(s) URL or empty string",
+    )
+    .optional(),
   deliveryFileName: z.string().max(255).optional(),
   note: z.string().max(1000).optional(),
 });
@@ -84,10 +94,12 @@ export async function PATCH(
     }
   }
 
-  // If marking DELIVERED, require a delivery file URL.
-  if (status === "DELIVERED" && !deliveryFileUrl && !existing.deliveryFileUrl) {
+  // If marking DELIVERED, require a delivery link.
+  // (Either passing one in this request, or one already exists on the order.)
+  const newUrl = deliveryFileUrl === undefined ? existing.deliveryFileUrl : (deliveryFileUrl || null);
+  if (status === "DELIVERED" && !newUrl) {
     return NextResponse.json(
-      { error: "Attach a delivery file before marking as Delivered." },
+      { error: "Attach a delivery link before marking as Delivered." },
       { status: 400 },
     );
   }
@@ -95,9 +107,13 @@ export async function PATCH(
   // Build the update payload
   const update: Record<string, unknown> = {};
   if (status) update.status = status;
-  if (deliveryFileUrl !== undefined) update.deliveryFileUrl = deliveryFileUrl;
-  if (deliveryFileName !== undefined)
-    update.deliveryFileName = deliveryFileName;
+  if (deliveryFileUrl !== undefined) {
+    // Normalize: empty string → null (so the DB column stays clean)
+    update.deliveryFileUrl = deliveryFileUrl || null;
+  }
+  if (deliveryFileName !== undefined) {
+    update.deliveryFileName = deliveryFileName || null;
+  }
 
   const updated = await db.order.update({
     where: { id },

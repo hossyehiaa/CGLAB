@@ -34,11 +34,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Reelzak — AI-Generated Reels, Crafted by Humans",
+  title: "CGLAB — AI-Generated Reels, Crafted by Humans",
   description:
-    "Reelzak is a productized AI media agency. We ideate, generate, and edit high-quality AI reels for brands — delivered through a seamless client portal.",
+    "CGLAB is a productized AI media agency. We ideate, generate, and edit high-quality AI reels for brands — delivered through a seamless client portal.",
   keywords: [
-    "Reelzak",
+    "CGLAB",
     "AI Reels",
     "AI Media Agency",
     "Productized Service",
@@ -46,17 +46,17 @@ export const metadata: Metadata = {
     "Reels Production",
     "AI Generation",
   ],
-  authors: [{ name: "Reelzak Studio" }],
+  authors: [{ name: "CGLAB Studio" }],
   openGraph: {
-    title: "Reelzak — AI-Generated Reels, Crafted by Humans",
+    title: "CGLAB — AI-Generated Reels, Crafted by Humans",
     description:
       "Submit a brief. Our team handles ideation, AI generation, and editing. Receive your finished reel.",
-    siteName: "Reelzak",
+    siteName: "CGLAB",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Reelzak — AI-Generated Reels, Crafted by Humans",
+    title: "CGLAB — AI-Generated Reels, Crafted by Humans",
     description:
       "Submit a brief. Our team handles ideation, AI generation, and editing. Receive your finished reel.",
   },
@@ -70,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable} font-sans antialiased reelzak-bg reelzak-grain reelzak-grid min-h-screen`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable} font-sans antialiased cglab-bg cglab-grain cglab-grid min-h-screen`}
       >
         <ThemeProvider>
           <SessionProvider>

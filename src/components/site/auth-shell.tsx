@@ -46,11 +46,11 @@ export function AuthShell({
             <div className="absolute inset-0 rounded-md border border-white/20" />
             <div className="absolute inset-[3px] rounded-sm bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors" />
             <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-              R
+              C
             </span>
           </div>
           <span className="font-display text-lg font-semibold tracking-tight">
-            Reelzak
+            CGLAB
           </span>
         </Link>
 
@@ -92,11 +92,11 @@ export function AuthShell({
             <div className="relative h-8 w-8">
               <div className="absolute inset-0 rounded-md border border-white/20" />
               <span className="absolute inset-0 flex items-center justify-center font-display text-sm font-semibold tracking-tight">
-                R
+                C
               </span>
             </div>
             <span className="font-display text-lg font-semibold tracking-tight">
-              Reelzak
+              CGLAB
             </span>
           </Link>
         </div>

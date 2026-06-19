@@ -114,7 +114,7 @@ export function Hero() {
               <Play className="h-7 w-7 md:h-8 md:w-8 fill-white text-white translate-x-0.5" />
             </button>
             <div className="mt-6 text-center">
-              <p className="text-mono-label text-white/60">Reelzak · Showreel 2026</p>
+              <p className="text-mono-label text-white/60">CGLAB · Showreel 2026</p>
               <p className="mt-2 text-sm text-white/40">
                 90 seconds of selected work
               </p>
@@ -129,7 +129,7 @@ export function Hero() {
             00:00 / 01:30
           </div>
           <div className="absolute bottom-5 left-5 text-mono-label text-white/40">
-            DIR · REELZAK STUDIO
+            DIR · CGLAB STUDIO
           </div>
           <div className="absolute bottom-5 right-5 text-mono-label text-white/40">
             ⌐◼ ◼¬
