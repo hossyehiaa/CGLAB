@@ -133,3 +133,59 @@ Stage Summary:
 - Aesthetic stays strictly monochrome: glass panels, white-on-dark forms, serif italic accents in the brand panel, hairline dividers, glow-white-soft on the primary CTA.
 - Lint clean (0 errors, 0 warnings).
 - Ready for Step 4 (Client Dashboard + Multi-step Briefing Form) upon user approval.
+
+---
+Task ID: step-4
+Agent: main (Super Z)
+Task: Step 4 — Build Client Dashboard + Multi-step Briefing Form. Strict monochrome aesthetic, flawless step transitions.
+
+Work Log:
+- Built src/lib/orders.ts — generateOrderNumber() (RZK-{YEAR}-{4-digit seq}), BRIEF_OBJECTIVES (Awareness/Sales/Educational), BRIEF_STYLES (Cinematic/3D/Realistic/Animated/Minimal) constants.
+- Built src/app/api/orders/route.ts:
+    • GET /api/orders — returns current user's orders (or all orders for admins), includes joined client info, sorted by createdAt desc.
+    • POST /api/orders — client-only. Zod-validated brief (brandName, industry, objective enum, style, targetAudience, keyMessage, referenceLinks array, additionalNotes, deadline). Generates order number, JSON-encodes brief details, creates the order with status=PENDING, and caches brandName on the user record. Returns 201.
+- Built src/components/site/dashboard-shell.tsx — shared layout for client + admin dashboards. Sticky topbar with: Reelzak mark + area label ("Client Portal" / "Admin"), optional back link, optional primary action (New Order button), and an animated user dropdown menu (avatar initials, name, email, role chip, sign-out). Footer at the bottom (mt-auto).
+- Built src/components/site/orders-table.tsx — sortable, responsive table. Columns: Order (# + created date), Brand (+ industry), Status (badge with colored dot — strictly grayscale ladder), Deadline (absolute + relative "in 8d" / "Xd overdue"), Open (circular chevron link). AnimatePresence row-by-row stagger on mount. Optional showClient column for admin view.
+- Built src/components/site/delivered-files.tsx — grid of glass cards for DELIVERED orders. Each card: video thumbnail placeholder with grid overlay + "Delivered" badge + dimensions label, order number, brand name, delivery date, Download (white CTA) + Open-in-new-tab buttons.
+- Built src/app/(dashboard)/dashboard/page.tsx — server component. Calls getCurrentUser(), redirects to /login if unauthenticated. Fetches user's orders via Prisma, splits into active vs delivered. Renders: welcome header with serif italic name accent, 4-stat grid (In production / Total / Delivered / Repeat rate), Active Orders section (or EmptyOrders empty state with "Start your first project" CTA), Delivered Files section (only if delivered.length > 0).
+- Built src/components/site/briefing-form/step-indicator.tsx — horizontal numbered track (desktop) with progress fill animation, plus a compact "Step X / Y" + progress bar (mobile). Completed steps show a checkmark, current step is enlarged, future steps are faint.
+- Built src/components/site/briefing-form/briefing-form.tsx — the centerpiece. 6 steps with flawless transitions:
+    • Step 1: Brand & Industry (2 inputs)
+    • Step 2: Objective (3 selectable cards)
+    • Step 3: Style (5 selectable cards)
+    • Step 4: Target Audience & Key Message (2 textareas with char counters)
+    • Step 5: References (dynamic add/remove link inputs + additional notes textarea)
+    • Step 6: Deadline (calendar popover + live order summary card)
+  Key UX details:
+    - AnimatePresence mode="wait" with custom direction (forward = slide left + blur out/in, back = slide right + blur out/in). Variants use cubic-bezier(0.22, 1, 0.36, 1) easing, 0.5s duration, with opacity (0.35s) and blur (0.4s) staggered for a luxurious feel.
+    - Per-step validation gates the Continue button (disabled until required fields filled).
+    - State preservation: going Back keeps all entered values in React state.
+    - Final step shows a live order summary card with all entered values.
+    - Submit flow: POST /api/orders → 201 → toast "Brief submitted" → redirect /dashboard → router.refresh().
+- Built src/app/(dashboard)/new-order/page.tsx — server component, requires CLIENT role (admins redirected to /admin), renders the DashboardShell with a back link + the BriefingForm.
+
+Verification (Agent Browser):
+1. Logged in as demo client (client@reelzak.studio) → redirected to /dashboard.
+2. Dashboard renders with: welcome header "Welcome back, Mira.", 4-stat grid, 2 active orders (RZK-2026-0002 Ideation + RZK-2026-0001 Editing) with relative deadline labels ("in 8d", "in 3d"), 1 delivered file (Castellano Atelier) with Download button.
+3. Screenshot: download/step4-dashboard.png
+4. Clicked "New Order" → navigated to /new-order → Step 1 (Brand & Industry) rendered, Continue button disabled (correct).
+5. Filled "Lumen Coffee" / "Food & Beverage" → Continue enabled. Clicked Continue → smoothly transitioned to Step 2 (Objective).
+6. Picked "Sales" → Continue → Step 3 (Style) with 5 cards.
+7. Picked "Cinematic" → Continue → Step 4 (Audience & Message) with 2 textareas + char counters.
+8. Filled audience + message → Continue → Step 5 (References) with Add Reference button.
+9. Clicked Add Reference → new empty link input appeared. Filled it with a fake Instagram URL. Continue enabled (optional step).
+10. Continue → Step 6 (Deadline) with calendar popover + live order summary card showing all entered values.
+11. Screenshots: download/step4-form-step6.png (final step with summary), download/step4-form-style.png (step 3 with style cards), download/step4-form-mobile.png (mobile viewport).
+12. Tested Back navigation: went back from step 4 to step 1 — values "Test Brand" / "Test Industry" were preserved in the inputs (state preservation confirmed).
+13. Submitted the brief → POST /api/orders returned 201 → redirected to /dashboard → new order RZK-2026-0004 "Lumen Coffee" appeared at the top of the active orders table with status "Pending". Order-number auto-incremented correctly from 0003 (seed) to 0004.
+14. Mobile viewport (375×812) tested — step indicator collapses to compact "Step X / Y" + progress bar, form cards stack properly.
+15. Zero runtime errors, zero console warnings.
+16. Lint clean (0 errors, 0 warnings).
+17. Dev server log shows: POST /api/orders 201 in 316ms — order creation endpoint working.
+
+Stage Summary:
+- Client dashboard complete: stats overview, active orders table with relative deadlines, delivered files grid with download buttons, empty state for new users.
+- Briefing form complete: 6-step wizard with flawless Framer Motion transitions (slide + blur), per-step validation, state preservation, live order summary on the final step, POST /api/orders integration.
+- All flows verified end-to-end in the browser.
+- New orders appear on the dashboard immediately after submission.
+- Ready for Step 5 (Admin Dashboard) upon user approval.
