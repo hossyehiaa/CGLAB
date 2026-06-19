@@ -21,6 +21,7 @@ import {
   Download,
   Save,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,10 @@ interface AdminOrder {
   paymentReceiptUrl: string | null;
   paymentStatus: PaymentStatus;
   paymentVerifiedAt: string | null;
+  // Revision fields (Task 4)
+  clientApprovedAt: string | null;
+  clientRevisionNotes: string | null;
+  clientRevisionRequestedAt: string | null;
   createdAt: string;
   updatedAt: string;
   client: {
@@ -324,6 +329,11 @@ export function OrderDetailDrawer({
               />
             </div>
           </section>
+
+          {/* ---------- CLIENT REVISION (Task 4) ---------- */}
+          {(order.clientRevisionNotes || order.clientApprovedAt) && (
+            <RevisionSection order={order} onMutated={onMutated} />
+          )}
 
           {/* ---------- PAYMENT (Task 3) ---------- */}
           {order.paymentReceiptUrl && (
@@ -786,6 +796,124 @@ function PaymentSection({
         >
           {updating ? "Updating…" : `Mark as ${order.paymentStatus === "VERIFIED" ? "Rejected" : "Verified"} instead`}
         </button>
+      )}
+    </section>
+  );
+}
+
+// ===========================================================================
+// RevisionSection — admin view of client's revision feedback / approval
+// ===========================================================================
+function RevisionSection({
+  order,
+  onMutated,
+}: {
+  order: AdminOrder;
+  onMutated: () => void;
+}) {
+  const [sendingBack, setSendingBack] = React.useState(false);
+
+  // Scenario 1: Client approved the cut
+  if (order.clientApprovedAt) {
+    return (
+      <section className="p-6 border-b border-white/[0.06]">
+        <div className="flex items-start gap-4">
+          <div className="h-10 w-10 shrink-0 rounded-full bg-white/[0.06] border border-white/20 flex items-center justify-center">
+            <Check className="h-4 w-4 text-white/90" />
+          </div>
+          <div className="flex-1">
+            <p className="text-mono-label text-white/45 mb-1">Client review</p>
+            <h3 className="font-display text-base font-medium tracking-tight">
+              Cut approved by client
+            </h3>
+            <p className="text-xs text-white/40 mt-1">
+              Approved on {fmtDate(order.clientApprovedAt)}. You can now mark
+              the order as Delivered.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Scenario 2: Client requested a revision with feedback
+  async function sendBackToEditing() {
+    setSendingBack(true);
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "EDITING" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data?.error ?? "Could not update status");
+        return;
+      }
+      toast.success("Order sent back to Editing.");
+      onMutated();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setSendingBack(false);
+    }
+  }
+
+  return (
+    <section className="p-6 border-b border-white/[0.06]">
+      <div className="flex items-start gap-4 mb-4">
+        <div className="h-10 w-10 shrink-0 rounded-full bg-white/[0.06] border border-white/20 flex items-center justify-center">
+          <MessageSquare className="h-4 w-4 text-white/90" />
+        </div>
+        <div className="flex-1">
+          <p className="text-mono-label text-white/45 mb-1">Client revision</p>
+          <h3 className="font-display text-base font-medium tracking-tight">
+            Revision requested
+          </h3>
+          {order.clientRevisionRequestedAt && (
+            <p className="text-xs text-white/40 mt-1">
+              Requested on {fmtDate(order.clientRevisionRequestedAt)}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* The revision notes — prominent, in a glass card */}
+      <div className="rounded-xl border border-white/[0.12] bg-white/[0.03] p-4 mb-4">
+        <p className="text-[11px] tracking-wider uppercase text-white/45 mb-2">
+          Client feedback
+        </p>
+        <p className="text-sm text-white/85 leading-relaxed whitespace-pre-wrap">
+          {order.clientRevisionNotes}
+        </p>
+      </div>
+
+      {/* Action: send back to editing */}
+      {order.status !== "EDITING" && (
+        <Button
+          onClick={sendBackToEditing}
+          disabled={sendingBack}
+          variant="outline"
+          className="group w-full h-10 rounded-full border-white/15 text-white/80 hover:text-white hover:border-white/30 hover:bg-white/[0.04] transition-all duration-300 disabled:opacity-60"
+        >
+          {sendingBack ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Sending back…
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-3.5 w-3.5" />
+              Send back to Editing
+            </>
+          )}
+        </Button>
+      )}
+
+      {order.status === "EDITING" && (
+        <p className="text-xs text-white/45 text-center py-1">
+          ✓ Order is back in Editing. The team has the feedback above.
+        </p>
       )}
     </section>
   );

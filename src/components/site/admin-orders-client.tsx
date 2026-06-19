@@ -29,6 +29,10 @@ interface AdminOrder {
   paymentReceiptUrl: string | null;
   paymentStatus: PaymentStatus;
   paymentVerifiedAt: string | null;
+  // Revision fields (Task 4)
+  clientApprovedAt: string | null;
+  clientRevisionNotes: string | null;
+  clientRevisionRequestedAt: string | null;
   createdAt: string;
   updatedAt: string;
   client: {

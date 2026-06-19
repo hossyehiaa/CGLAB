@@ -59,6 +59,10 @@ export default async function AdminDashboardPage() {
     paymentReceiptUrl: o.paymentReceiptUrl ?? null,
     paymentStatus: o.paymentStatus,
     paymentVerifiedAt: o.paymentVerifiedAt ? o.paymentVerifiedAt.toISOString() : null,
+    // Revision fields (Task 4)
+    clientApprovedAt: o.clientApprovedAt ? o.clientApprovedAt.toISOString() : null,
+    clientRevisionNotes: o.clientRevisionNotes,
+    clientRevisionRequestedAt: o.clientRevisionRequestedAt ? o.clientRevisionRequestedAt.toISOString() : null,
     createdAt: o.createdAt.toISOString(),
     updatedAt: o.updatedAt.toISOString(),
     client: {

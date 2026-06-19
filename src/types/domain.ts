@@ -50,6 +50,10 @@ export interface Order {
   paymentReceiptUrl?: string | null;
   paymentStatus: PaymentStatus;
   paymentVerifiedAt?: string | null;
+  // Client revision fields (Task 4)
+  clientApprovedAt?: string | null;
+  clientRevisionNotes?: string | null;
+  clientRevisionRequestedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

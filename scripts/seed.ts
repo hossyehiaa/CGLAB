@@ -82,8 +82,12 @@ async function main() {
           referenceLinks: ["https://instagram.com/reel.castellano"],
           additionalNotes: "Use warm grain, no dialogue, score-driven edit.",
         }),
-        status: "EDITING",
+        status: "READY_FOR_REVIEW",
         deadline: inDays(3),
+        // First cut delivery link (for client review)
+        deliveryFileUrl:
+          "https://drive.google.com/file/d/1aBcDeFgHiJkLmNoPqRsTuVwXyZ/view",
+        deliveryFileName: "CGL-2026-0001-first-cut.mp4",
         // Payment verified (this order is already in production)
         paymentPackage: "monthly-4",
         paymentReceiptUrl: PLACEHOLDER_RECEIPT,

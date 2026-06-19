@@ -5,8 +5,10 @@ import { getCurrentUser } from "@/lib/auth";
 import { DashboardShell } from "@/components/site/dashboard-shell";
 import { OrdersTable } from "@/components/site/orders-table";
 import { DeliveredFiles } from "@/components/site/delivered-files";
+import { ReviewSection } from "@/components/site/review-section";
 import { ArrowUpRight, Clapperboard, Package, CheckCircle2 } from "lucide-react";
 import { format, parseISO, isValid } from "date-fns";
+import type { Order } from "@/types/domain";
 
 export default async function ClientDashboardPage() {
   const user = await getCurrentUser();
@@ -21,6 +23,40 @@ export default async function ClientDashboardPage() {
   // Split into active vs delivered
   const activeOrders = orders.filter((o) => o.status !== "DELIVERED");
   const deliveredOrders = orders.filter((o) => o.status === "DELIVERED");
+
+  // Orders that are ready for client review (Task 4)
+  const reviewOrders = activeOrders.filter(
+    (o) => o.status === "READY_FOR_REVIEW",
+  );
+
+  // Serialize review orders for the client component (Date → ISO string)
+  const serializedReviewOrders: Order[] = reviewOrders.map((o) => ({
+    id: o.id,
+    orderNumber: o.orderNumber,
+    clientId: o.clientId,
+    brandName: o.brandName,
+    industry: o.industry,
+    briefDetails: o.briefDetails,
+    status: o.status as any,
+    deadline: o.deadline ? o.deadline.toISOString() : null,
+    deliveryFileUrl: o.deliveryFileUrl,
+    deliveryFileName: o.deliveryFileName,
+    paymentPackage: o.paymentPackage,
+    paymentReceiptUrl: o.paymentReceiptUrl,
+    paymentStatus: o.paymentStatus as any,
+    paymentVerifiedAt: o.paymentVerifiedAt
+      ? o.paymentVerifiedAt.toISOString()
+      : null,
+    clientApprovedAt: o.clientApprovedAt
+      ? o.clientApprovedAt.toISOString()
+      : null,
+    clientRevisionNotes: o.clientRevisionNotes,
+    clientRevisionRequestedAt: o.clientRevisionRequestedAt
+      ? o.clientRevisionRequestedAt.toISOString()
+      : null,
+    createdAt: o.createdAt.toISOString(),
+    updatedAt: o.updatedAt.toISOString(),
+  }));
 
   // Stats
   const inProduction = activeOrders.length;
@@ -142,12 +178,31 @@ export default async function ClientDashboardPage() {
         )}
       </section>
 
+      {/* ===================== READY FOR REVIEW ===================== */}
+      {serializedReviewOrders.length > 0 && (
+        <section className="mb-16">
+          <div className="mb-6">
+            <p className="text-mono-label text-white/40 mb-2">
+              (03) — Awaiting your review
+            </p>
+            <h2 className="text-display text-2xl md:text-3xl font-medium tracking-tight">
+              First cuts ready
+            </h2>
+          </div>
+          <div className="space-y-6">
+            {serializedReviewOrders.map((order) => (
+              <ReviewSection key={order.id} order={order} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ===================== DELIVERED ===================== */}
       {deliveredOrders.length > 0 && (
         <section className="mb-16">
           <div className="mb-6">
             <p className="text-mono-label text-white/40 mb-2">
-              (03) — Delivered files
+              ({serializedReviewOrders.length > 0 ? "04" : "03"}) — Delivered files
             </p>
             <h2 className="text-display text-2xl md:text-3xl font-medium tracking-tight">
               Finished reels

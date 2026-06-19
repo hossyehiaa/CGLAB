@@ -65,6 +65,10 @@ model Order {
   paymentVerifiedAt DateTime?
   paymentVerifiedById String?
   paymentVerifiedBy User?        @relation("PaymentVerifier", fields: [paymentVerifiedById], references: [id])
+  // --- Client revision (Task 4) ---
+  clientApprovedAt DateTime?     // set when client clicks "Approve"
+  clientRevisionNotes String?    // set when client clicks "Request Revision" + submits feedback
+  clientRevisionRequestedAt DateTime?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 

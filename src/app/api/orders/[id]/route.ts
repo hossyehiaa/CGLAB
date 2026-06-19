@@ -79,10 +79,11 @@ export async function PATCH(
 
   const { status, deliveryFileUrl, deliveryFileName, paymentStatus, note } = parsed.data;
 
-  // Validate the status transition is allowed (must move forward in the flow,
-  // OR stay the same — we don't allow backward moves to keep the audit trail
-  // honest). Exception: the revision flow lets admin move from READY_FOR_REVIEW
-  // back to EDITING (Task 4 — implemented separately).
+  // Validate the status transition.
+  // - Forward transitions are always allowed.
+  // - Backward transition is ONLY allowed from READY_FOR_REVIEW → EDITING
+  //   (this is the revision flow: admin manually sends an order back to editing,
+  //   or the client requests a revision via the /review endpoint).
   if (status && !VALID_STATUSES.has(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
@@ -90,12 +91,17 @@ export async function PATCH(
     const fromIdx = ORDER_STATUS_FLOW.indexOf(existing.status);
     const toIdx = ORDER_STATUS_FLOW.indexOf(status);
     if (toIdx < fromIdx) {
-      return NextResponse.json(
-        {
-          error: "Status cannot move backward through the pipeline.",
-        },
-        { status: 400 },
-      );
+      // Allow the specific revision transition: READY_FOR_REVIEW → EDITING
+      const isRevisionFlow =
+        existing.status === "READY_FOR_REVIEW" && status === "EDITING";
+      if (!isRevisionFlow) {
+        return NextResponse.json(
+          {
+            error: "Status cannot move backward through the pipeline.",
+          },
+          { status: 400 },
+        );
+      }
     }
   }
 
