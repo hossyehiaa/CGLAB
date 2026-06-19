@@ -59,3 +59,9 @@ server.log
 /prisma/migrations/
 .zscripts/
 .bun.lock
+
+# Deploy artifacts
+.env.production
+.deploy-creds
+*.bundle
+download/

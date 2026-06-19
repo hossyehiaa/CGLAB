@@ -13,9 +13,8 @@ generator client {
 }
 
 datasource db {
-  // LOCAL DEV: SQLite (works out of the box in this sandbox)
-  // PRODUCTION: change to "postgresql" and point DATABASE_URL to Neon
-  provider = "sqlite"
+  // Production: PostgreSQL on Neon
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
