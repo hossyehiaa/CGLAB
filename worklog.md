@@ -189,3 +189,91 @@ Stage Summary:
 - All flows verified end-to-end in the browser.
 - New orders appear on the dashboard immediately after submission.
 - Ready for Step 5 (Admin Dashboard) upon user approval.
+
+---
+Task ID: step-5
+Agent: main (Super Z)
+Task: Step 5 — Build Admin Dashboard with status pipeline management, audit trail, and premium drag-drop file upload. Strict monochrome throughout.
+
+Work Log:
+- Installed @vercel/blob for production file storage.
+- Built src/app/api/orders/[id]/route.ts:
+    • GET — fetch a single order with client + status-update audit trail joined (admin-only).
+    • PATCH — update an order's status (admin-only). Validates forward-only transitions (rejects backward moves with 400). Requires a delivery file URL before allowing status=DELIVERED (400 otherwise). Writes an OrderStatusUpdate audit row on every status change with the admin's ID + optional note.
+- Built src/app/api/orders/[id]/upload/route.ts — admin-only multipart upload. Validates file type (MP4/MOV/WebM/m4v by mime or extension) and size (≤500MB). Uses Vercel Blob when BLOB_READ_WRITE_TOKEN is set, falls back to local filesystem under /public/uploads/{orderNumber}/ when no token (sandbox-friendly). Attaches the resulting URL + filename to the order and returns 201.
+- Built src/app/(admin)/admin/page.tsx — server component. Admin-only (redirects non-admins to /dashboard). Fetches ALL orders with the client joined, computes per-status counts, serializes for the client component. Renders: welcome header "The studio floor.", 3-stat summary (In production / Delivered / Total), 6-column pipeline overview (one tile per status with count), and the all-orders table section.
+- Built src/components/site/admin-orders-client.tsx — the interactive table:
+    • Status filter chips: All + 6 statuses, each with live count badge. Active chip is solid white-on-black; inactive chips are bordered with hover state.
+    • Search input with clear button — searches across order number, brand, industry, client name, client email.
+    • Sortable, clickable rows — clicking opens the detail drawer.
+    • Empty state when no orders match the filter/search.
+    • Strictly monochrome status badges (grayscale ladder from PENDING faint → DELIVERED solid white).
+- Built src/components/site/order-detail-drawer.tsx — slide-in right panel (560-640px wide on desktop, full-width on mobile). Contains:
+    • Header: order number, brand name, industry, close button.
+    • Current Status section: large status badge, "Step X / 6" indicator, 6-segment pipeline progress bar (filled segments are white, future are faint), primary "Advance to {next}" button (white CTA with glow-white-soft), and "Skip to:" quick-jump chips for jumping multiple steps ahead.
+    • Brief section: full brief details rendered with icon-prefixed rows (Client, Brand, Industry, Objective, Style, Audience, Key message, Notes, References with clickable links, Deadline, Submitted).
+    • Delivery File section: if a file is attached, shows a card with the filename, URL, and Open button; otherwise shows the upload dropzone. Always shows the dropzone for re-uploading/replacing.
+    • Body scroll locked + Escape-to-close + click-outside-to-close.
+- Built the UploadDropzone — the premium drag-and-drop uploader:
+    • Dashed border, glass background, hover lift, drag-over state with subtle scale-up + grid overlay appearance.
+    • Central UploadCloud icon that floats up on drag-over.
+    • Click anywhere to browse (hidden file input).
+    • Client-side validation (type + size) before upload.
+    • XHR-based upload with live progress bar (0-100%) — fetch doesn't support upload progress events.
+    • Animated progress fill using Framer Motion.
+    • Toast feedback on success ("Delivery file replaced." or "File attached. You can now mark the order as Delivered.").
+    • Replaces existing file if one was already attached.
+
+Verification (Agent Browser):
+1. Logged in as admin (admin@reelzak.studio) → redirected to /admin.
+2. Admin dashboard rendered: 4 orders visible (Lumen Coffee + 3 Castellano Atelier), 6 filter chips with correct counts (All 4, Pending 1, Ideation 1, Editing 1, Delivered 1), pipeline overview tiles matching.
+3. Screenshot: download/step5-admin-dashboard.png (full page).
+4. Clicked Lumen Coffee (RZK-2026-0004, Pending) → drawer slid in from the right with smooth animation. Showed: order number, brand, full brief details (Objective: Sales, Style: Cinematic, Audience, Key message, References with clickable link, Deadline), "Advance to Ideation" CTA, "Skip to:" chips, and the upload dropzone.
+5. Screenshot: download/step5-order-drawer.png (drawer open).
+6. Clicked "Advance to Ideation" → status updated, page reloaded, filter chips updated (Pending 0, Ideation 2).
+7. Verified the audit trail in the DB: OrderStatusUpdate row created with fromStatus=PENDING, toStatus=IDEATION, changedBy=admin@reelzak.studio, timestamp recorded.
+8. Tested file upload via the dropzone (synthetic 36-byte MP4 file): POST /api/orders/{id}/upload returned 201, file saved to /public/uploads/RZK-2026-0004/{uuid}.mp4, drawer reloaded and showed the file card with filename + URL + Open button.
+9. Screenshot: download/step5-drawer-with-file.png.
+10. Traversed the full pipeline: Pending → Ideation → AI Generation → Editing → Ready for Review → Delivered. Each step recorded in the audit trail. Final DB state: status=DELIVERED, file=test-reel.mp4, url=/uploads/RZK-2026-0004/{uuid}.mp4.
+11. Verified backward-transition guard: tried PATCH {status: PENDING} on the Delivered order → 400 "Status cannot move backward through the pipeline."
+12. Verified "Delivered requires file" guard: tried PATCH {status: DELIVERED} on RZK-2026-0002 (no file attached) → 400 "Attach a delivery file before marking as Delivered."
+13. Verified search filter: typed "Lumen" → table filtered to just the Lumen Coffee order. Cleared search → all orders back.
+14. Verified status filter chip: clicked "Delivered" → table showed only delivered orders.
+15. Mobile responsive verified at 375×812: filter chips horizontal-scroll, table horizontal-scrolls, drawer is full-width.
+16. Screenshots: download/step5-admin-final.png (full admin page), step5-admin-mobile.png, step5-admin-mobile-drawer.png.
+17. Zero runtime errors, zero console warnings.
+18. Lint clean (0 errors, 0 warnings).
+19. Dev server log shows: POST /api/orders/{id}/upload 201, PATCH /api/orders/{id} 200 — all endpoints working.
+
+Stage Summary:
+- Admin dashboard complete: stats overview, pipeline view with per-status counts, all-orders table with status filter chips + search, clickable rows opening a slide-in detail drawer.
+- Order detail drawer: full brief breakdown, current-status visualization, "Advance to {next}" primary CTA + "Skip to:" quick-jump chips, premium drag-drop upload zone with live progress, file card with download button when attached.
+- Status pipeline management: forward-only transitions enforced server-side, audit trail (OrderStatusUpdate) records every change with the admin's ID + timestamp.
+- File upload: validates type + size, uses Vercel Blob in production (with BLOB_READ_WRITE_TOKEN) and falls back to local filesystem in dev/sandbox. Premium drag-drop UX with progress bar.
+- All guards verified: backward-transition rejected, Delivered-without-file rejected, admin-only access enforced via middleware + API.
+- All 5 execution steps complete. Ready for final deployment guide (GitHub + Vercel + Neon).
+
+---
+Task ID: step-6
+Agent: main (Super Z)
+Task: Final deployment guide — GitHub + Vercel + Neon PostgreSQL.
+
+Work Log:
+- Updated .gitignore to exclude local dev artifacts: /db/, /public/uploads/, /prisma/migrations/, .zscripts/, .bun.lock.
+- Wrote comprehensive README.md at project root covering:
+    • Feature overview (public, client portal, admin console).
+    • Quick start (5-step local setup with demo accounts).
+    • Step-by-step production deployment guide: GitHub push → Neon DB → Vercel Blob store → Prisma provider swap → Vercel import with env vars table → Post-deploy (NEXTAUTH_URL update + admin password rotation).
+    • Architecture map (file tree with descriptions).
+    • Prisma schema overview.
+    • Status pipeline diagram.
+    • Design system reference (palette, typography, glassmorphism utilities, motion).
+    • Available scripts table.
+    • Security notes.
+- Verified lint still clean (0 errors, 0 warnings).
+- Verified dev server responding 200 on /admin with Prisma queries executing.
+
+Stage Summary:
+- All 5 execution steps complete + deployment guide written.
+- Project is ready for: git push → Vercel import → production.
+- README.md contains everything needed to deploy without external docs.
