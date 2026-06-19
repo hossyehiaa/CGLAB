@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { SessionProvider } from "@/components/providers/session-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -72,21 +73,23 @@ export default function RootLayout({
         className={`${inter.variable} ${spaceGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable} font-sans antialiased reelzak-bg reelzak-grain reelzak-grid min-h-screen`}
       >
         <ThemeProvider>
-          <div className="relative z-10 flex min-h-screen flex-col">
-            {children}
-          </div>
-          <Toaster />
-          <SonnerToaster
-            position="bottom-right"
-            theme="dark"
-            toastOptions={{
-              style: {
-                background: "oklch(0.10 0 0)",
-                border: "1px solid oklch(1 0 0 / 12%)",
-                color: "oklch(0.97 0 0)",
-              },
-            }}
-          />
+          <SessionProvider>
+            <div className="relative z-10 flex min-h-screen flex-col">
+              {children}
+            </div>
+            <Toaster />
+            <SonnerToaster
+              position="bottom-right"
+              theme="dark"
+              toastOptions={{
+                style: {
+                  background: "oklch(0.10 0 0)",
+                  border: "1px solid oklch(1 0 0 / 12%)",
+                  color: "oklch(0.97 0 0)",
+                },
+              }}
+            />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

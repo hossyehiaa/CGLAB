@@ -67,3 +67,69 @@ Stage Summary:
 - Dev server responding cleanly on port 3000.
 - Theme redesign applied globally — all future steps (auth, dashboard, admin) will inherit the monochrome system automatically via the design tokens.
 - Ready for Step 3 (Authentication) upon user approval.
+
+---
+Task ID: step-3
+Agent: main (Super Z)
+Task: Step 3 — Implement Authentication (Login/Signup) with NextAuth, role-based access, and middleware protection. Maintain the strict monochrome aesthetic.
+
+Work Log:
+- Installed bcryptjs + @types/bcryptjs + @auth/prisma-adapter.
+- Built src/lib/auth/password.ts — hashPassword (12 rounds) + verifyPassword helpers.
+- Built src/lib/auth/auth-options.ts — NextAuth config with CredentialsProvider, JWT session strategy, PrismaAdapter wired, custom pages (signIn: /login), and JWT/Session callbacks extended to include `id`, `role`, `brandName` on the session user object. Module augmentation for next-auth + next-auth/jwt types included.
+- Created src/app/api/auth/[...nextauth]/route.ts — standard NextAuth App Router handler.
+- Created src/app/api/auth/signup/route.ts — POST endpoint with Zod validation (name min 2, valid email, password min 8), duplicate-email check (409), bcrypt hashing, returns 201 on success.
+- Built src/lib/auth/index.ts — getSession, getCurrentUser, requireUser, requireAdmin helpers for server components/route handlers.
+- Built src/lib/auth/server.ts — single-file re-exports for convenience.
+- Built src/middleware.ts — withAuth-based middleware. Public paths: /, /login, /signup, /api/auth, static files. Admin paths: /admin (requires role=ADMIN). Authenticated users visiting /login or /signup are auto-redirected to their role-appropriate dashboard.
+- Created src/components/providers/session-provider.tsx — wraps next-auth/react SessionProvider for client components.
+- Wrapped the root layout's children in <SessionProvider> so useSession / signIn work on any client page.
+- Created scripts/seed.ts + added `db:seed` script to package.json. Seeds:
+    • Admin:  admin@reelzak.studio / reelzak-admin-2026
+    • Client: client@reelzak.studio / reelzak-client-2026 (brandName: "Castellano Atelier")
+    • 3 sample orders for the demo client (statuses: EDITING, IDEATION, DELIVERED) — gives Steps 4/5 something to render.
+- Ran `bun run db:seed` — all rows created successfully.
+
+UI (strict monochrome glass aesthetic):
+- Built src/components/site/auth-shell.tsx — shared two-column layout for login + signup.
+    • Left panel (lg+): cinematic brand side with grid overlay, white radial hotspot, Reelzak mark, oversized display headline "The reel is everything." (with serif italic accent), editorial paragraph, and a client quote at the bottom.
+    • Right panel: form container with mobile-only brand bar; form centered with max-w-md.
+- Built src/app/(auth)/login/page.tsx — client component.
+    • Demo-account hint card with clickable buttons that autofill credentials.
+    • Email + password fields with monochrome Input styling (bg-white/[0.02], border-white/10, focus:border-white/30).
+    • Inline error display with motion animation.
+    • Submit triggers signIn("credentials", { redirect: false }), then fetches /api/auth/session to determine role and redirects to /admin or /dashboard accordingly.
+    • Loading spinner state on the submit button.
+    • Footer link to /signup.
+- Built src/app/(auth)/signup/page.tsx — client component.
+    • Name + Email + Password fields with same monochrome styling.
+    • Live password-strength meter (4 segments, pure white opacity ladder, label: Weak/Fair/Strong/Excellent).
+    • Client-side Zod-style validation with field-level error messages.
+    • Submit flow: POST /api/auth/signup → if 201, signIn("credentials") → redirect /dashboard. On 409 (duplicate email) shows inline error.
+    • Terms/Privacy microcopy under the form.
+- Created placeholder pages for /dashboard and /admin (just enough for the post-login redirect to land somewhere meaningful; the real dashboards arrive in Steps 4 and 5). Both use getCurrentUser() server-side and redirect to /login if unauthenticated; /admin additionally redirects non-admins to /dashboard.
+
+Verification (Agent Browser):
+1. GET /login → 200, page renders both panels, demo-account buttons appear.
+2. Clicked "client →" demo button → email + password fields auto-filled.
+3. Clicked "Sign in" → POST /api/auth/callback/credentials → 200 → redirected to /dashboard.
+4. /dashboard shows "Signed in as Mira Castellano" — confirms JWT session extension (name + role) works end-to-end.
+5. Tried /admin as a client → middleware redirected to /dashboard (forbidden path blocked). ✓
+6. Signed out → bounced to /login?callbackUrl=...
+7. Logged in as admin (admin@reelzak.studio) → redirected to /admin, page shows "Admin access granted." ✓
+8. Cleared cookies, tried /dashboard unauthenticated → middleware bounced to /login?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2Fdashboard. ✓
+9. Signed up a brand new user (Jordan Hayes / jordan.hayes.test@reelzak.studio) → account created (201) → auto-signin → landed on /dashboard with "Signed in as Jordan Hayes" and welcome toast. ✓
+10. Tried signing up again with the existing client email → "An account with that email already exists" inline error (409 path). ✓
+11. Tried logging in with the right email but wrong password → "Invalid email or password." inline error (401 path). ✓
+12. Captured screenshots at desktop (1440×900) and mobile (375×812) for both /login and /signup:
+    download/step3-login-desktop.png, step3-signup-desktop.png, step3-login-mobile.png, step3-signup-mobile.png, step3-signup-filled.png
+13. Zero runtime errors, zero console warnings — only standard HMR + React DevTools info logs.
+14. Dev server log shows the exact Prisma queries + auth callback status codes (200/401/201) matching each test step.
+
+Stage Summary:
+- Authentication system complete: signup → auto-login → dashboard, login → role-aware redirect, signout, middleware-protected routes, admin-only /admin gate, all demo flows verified in-browser.
+- Two demo accounts seeded and ready: client@reelzak.studio / admin@reelzak.studio.
+- Three sample orders seeded for the demo client so Step 4's dashboard has data on first load.
+- Aesthetic stays strictly monochrome: glass panels, white-on-dark forms, serif italic accents in the brand panel, hairline dividers, glow-white-soft on the primary CTA.
+- Lint clean (0 errors, 0 warnings).
+- Ready for Step 4 (Client Dashboard + Multi-step Briefing Form) upon user approval.
