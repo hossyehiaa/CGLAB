@@ -36,7 +36,7 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 flex items-center justify-between">
         {/* Brand */}
         <Link href="/" className="group flex items-center gap-2.5" aria-label="CGLAB home">
-          <Logo height={26} className="transition-opacity duration-300 group-hover:opacity-100" />
+          <Logo height={44} className="transition-opacity duration-300 group-hover:opacity-100" />
         </Link>
 
         {/* Desktop nav */}

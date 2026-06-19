@@ -77,7 +77,7 @@ export function Footer() {
           {/* Brand col */}
           <div className="col-span-2 md:col-span-1">
             <div className="mb-4">
-              <Logo height={24} dim />
+              <Logo height={36} dim />
             </div>
             <p className="text-sm text-white/45 leading-relaxed max-w-xs">
               {BRAND.tagline} A productized AI media agency for brands who

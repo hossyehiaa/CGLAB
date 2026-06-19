@@ -44,7 +44,7 @@ export function AuthShell({
           className="relative z-10 flex items-center group"
           aria-label="CGLAB home"
         >
-          <Logo height={28} className="transition-opacity duration-300 group-hover:opacity-100" />
+          <Logo height={52} className="transition-opacity duration-300 group-hover:opacity-100" />
         </Link>
 
         {/* Editorial headline — middle */}
@@ -82,7 +82,7 @@ export function AuthShell({
         {/* Mobile-only brand bar */}
         <div className="lg:hidden p-6 border-b border-white/[0.06]">
           <Link href="/" className="flex items-center" aria-label="CGLAB home">
-            <Logo height={24} />
+            <Logo height={40} />
           </Link>
         </div>
 

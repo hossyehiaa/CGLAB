@@ -18,17 +18,17 @@ interface LogoProps {
  * CGLAB brand logo.
  *
  * Renders the custom wordmark PNG via next/image for automatic optimization,
- * responsive srcset, and lazy-loading. The source is 666×375 (≈1.78:1 wide
- * wordmark with transparent background).
+ * responsive srcset, and lazy-loading. The source is 350×98 (≈3.57:1 wide
+ * wordmark with transparent background, cropped tight to the content).
  *
  * Usage:
- *   <Logo />                       // default: 28px tall, full opacity
- *   <Logo height={32} />           // taller variant for hero / auth panels
- *   <Logo height={20} dim />       // smaller, dimmed for footer
+ *   <Logo />                       // default: 40px tall, full opacity
+ *   <Logo height={48} />           // taller variant for hero / auth panels
+ *   <Logo height={32} dim />       // smaller, dimmed for footer
  */
-export function Logo({ height = 28, className = "", alt = "CGLAB", dim = false }: LogoProps) {
-  // Source dimensions: 666 × 375 → aspect ratio 1.776
-  const width = Math.round(height * (666 / 375));
+export function Logo({ height = 40, className = "", alt = "CGLAB", dim = false }: LogoProps) {
+  // Source dimensions: 350 × 98 → aspect ratio 3.571
+  const width = Math.round(height * (350 / 98));
   return (
     <Image
       src="/logo.png"

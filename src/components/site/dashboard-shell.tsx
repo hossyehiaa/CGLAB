@@ -59,7 +59,7 @@ export function DashboardShell({
           {/* Left — brand + area label */}
           <div className="flex items-center gap-4">
             <Link href="/" className="group flex items-center" aria-label="CGLAB home">
-              <Logo height={24} className="transition-opacity duration-300 group-hover:opacity-100" />
+              <Logo height={40} className="transition-opacity duration-300 group-hover:opacity-100" />
             </Link>
             <span className="hidden md:block h-5 w-px bg-white/10" />
             <span className="hidden md:block text-mono-label text-white/45">
