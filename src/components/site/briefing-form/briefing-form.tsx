@@ -13,7 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { StepIndicator } from "./step-indicator";
 import { BRIEF_OBJECTIVES, BRIEF_STYLES } from "@/lib/orders";
-import { PRICING_PACKAGES, BRAND } from "@/lib/brand";
+import { PRICING_PACKAGES } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n";
 import { format } from "date-fns";
 
@@ -582,7 +582,7 @@ export function BriefingForm() {
                     </div>
                   </div>
 
-                  {/* InstaPay instructions */}
+                  {/* Payment instructions */}
                   <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 space-y-3">
                     <p className="text-mono-label text-white/45">
                       Payment instructions
@@ -591,23 +591,20 @@ export function BriefingForm() {
                       <li className="flex gap-3">
                         <span className="font-mono text-white/40 shrink-0">01.</span>
                         <span>
-                          Open <span className="text-white/90 font-medium">InstaPay</span> and send{" "}
+                          The total amount is{" "}
                           <span className="text-white font-medium">
                             {state.paymentPackage
                               ? `${PRICING_PACKAGES.find((p) => p.slug === state.paymentPackage)?.priceEgp.toLocaleString("en-US")} EGP`
-                              : "the package amount"}
-                          </span>{" "}
-                          to:
+                              : "based on your selected package"}
+                          </span>
+                          .
                         </span>
-                      </li>
-                      <li className="flex gap-3 pl-6">
-                        <div className="flex-1 rounded-lg border border-white/10 bg-black/30 px-4 py-3 font-mono text-base text-white tracking-wide">
-                          {BRAND.instapayHandle}
-                        </div>
                       </li>
                       <li className="flex gap-3">
                         <span className="font-mono text-white/40 shrink-0">02.</span>
-                        <span>Recipient name: <span className="text-white/90">{BRAND.instapayName}</span></span>
+                        <span>
+                          <span className="text-white/90 font-medium">DM us</span> to receive payment details and complete the transfer.
+                        </span>
                       </li>
                       <li className="flex gap-3">
                         <span className="font-mono text-white/40 shrink-0">03.</span>
